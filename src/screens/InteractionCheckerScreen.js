@@ -1,11 +1,11 @@
 /**
  * Interaction Checker Screen
- * 
+ *
  * AI-powered drug interaction checker that analyzes selected medications
  * for potential interactions and displays results with severity levels.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOWS } from '../styles/theme';
+import { TYPOGRAPHY, SPACING, BORDER_RADIUS, SHADOWS } from '../styles/theme';
 import {
   Header,
   Button,
@@ -31,8 +31,9 @@ import { useAI } from '../hooks';
 
 const InteractionCheckerScreen = ({ navigation, route }) => {
   const insets = useSafeAreaInsets();
-  const { activeMedications, interactionHistory, refreshInteractionHistory } = useApp();
-  const { checkInteractions, loading, error, clearError } = useAI();
+  const { colors, activeMedications, interactionHistory, refreshInteractionHistory } = useApp();
+  const { checkInteractions, loading, clearError } = useAI();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   
   // Selected medications for checking
   const [selectedMedications, setSelectedMedications] = useState([]);
@@ -113,24 +114,6 @@ const InteractionCheckerScreen = ({ navigation, route }) => {
   };
 
   /**
-   * Get severity color
-   */
-  const getSeverityColor = (severity) => {
-    switch (severity?.toLowerCase()) {
-      case 'none':
-        return COLORS.success;
-      case 'mild':
-        return COLORS.info;
-      case 'moderate':
-        return COLORS.warning;
-      case 'severe':
-        return COLORS.danger;
-      default:
-        return COLORS.textSecondary;
-    }
-  };
-
-  /**
    * Render selection view
    */
   const renderSelectionView = () => (
@@ -163,11 +146,14 @@ const InteractionCheckerScreen = ({ navigation, route }) => {
 
       {/* Selected count badge */}
       {selectedMedications.length > 0 && (
-        <View style={styles.selectedBadge}>
+        <View style={[
+          styles.selectedBadge,
+          { backgroundColor: colors.primarySoft },
+        ]}>
           <MaterialCommunityIcons
             name="check-circle"
             size={20}
-            color={COLORS.primary}
+            color={colors.primary}
           />
           <Text style={styles.selectedBadgeText}>
             {selectedMedications.length} medication{selectedMedications.length !== 1 ? 's' : ''} selected
@@ -192,7 +178,10 @@ const InteractionCheckerScreen = ({ navigation, route }) => {
               key={medication.id}
               style={[
                 styles.medicationSelectItem,
-                isSelected && styles.medicationSelectItemSelected,
+                isSelected && [
+                  styles.medicationSelectItemSelected,
+                  { backgroundColor: colors.primarySoft, borderColor: colors.primary },
+                ],
               ]}
               onPress={() => toggleMedication(medication)}
               activeOpacity={0.7}
@@ -200,13 +189,15 @@ const InteractionCheckerScreen = ({ navigation, route }) => {
               <View style={styles.checkboxContainer}>
                 <View style={[
                   styles.checkbox,
+                  { borderColor: colors.border, backgroundColor: colors.surface },
                   isSelected && styles.checkboxSelected,
+                  isSelected && { backgroundColor: colors.primary, borderColor: colors.primary },
                 ]}>
                   {isSelected && (
                     <MaterialCommunityIcons
                       name="check"
                       size={16}
-                      color={COLORS.white}
+                      color={colors.textLight}
                     />
                   )}
                 </View>
@@ -249,7 +240,7 @@ const InteractionCheckerScreen = ({ navigation, route }) => {
           <MaterialCommunityIcons
             name={results?.hasInteractions ? 'alert-circle' : 'check-circle'}
             size={48}
-            color={results?.hasInteractions ? COLORS.warning : COLORS.success}
+            color={results?.hasInteractions ? colors.warning : colors.success}
           />
           <View style={styles.resultsHeaderText}>
             <Text style={styles.resultsTitle}>
@@ -264,7 +255,12 @@ const InteractionCheckerScreen = ({ navigation, route }) => {
         </View>
         
         {results?.summary && (
-          <Text style={styles.resultsSummary}>{results.summary}</Text>
+          <Text style={[
+            styles.resultsSummary,
+            { borderTopColor: colors.border },
+          ]}>
+            {results.summary}
+          </Text>
         )}
       </Card>
 
@@ -291,13 +287,19 @@ const InteractionCheckerScreen = ({ navigation, route }) => {
       <Text style={styles.sectionTitle}>Medications Checked</Text>
       <View style={styles.checkedMedicationsGrid}>
         {selectedMedications.map((med) => (
-          <View key={med.id} style={styles.checkedMedChip}>
+          <View key={med.id} style={[
+            styles.checkedMedChip,
+            { backgroundColor: colors.primarySoft },
+          ]}>
             <MaterialCommunityIcons
               name="pill"
               size={14}
-              color={COLORS.primary}
+              color={colors.primary}
             />
-            <Text style={styles.checkedMedText}>{med.name}</Text>
+            <Text style={[
+              styles.checkedMedText,
+              { color: colors.primary },
+            ]}>{med.name}</Text>
           </View>
         ))}
       </View>
@@ -315,11 +317,14 @@ const InteractionCheckerScreen = ({ navigation, route }) => {
       </View>
 
       {/* Disclaimer */}
-      <View style={styles.disclaimer}>
+      <View style={[
+        styles.disclaimer,
+        { backgroundColor: colors.surface },
+      ]}>
         <MaterialCommunityIcons
           name="information"
           size={16}
-          color={COLORS.textTertiary}
+          color={colors.textTertiary}
         />
         <Text style={styles.disclaimerText}>
           This information is AI-generated and for educational purposes only.
@@ -360,7 +365,7 @@ const InteractionCheckerScreen = ({ navigation, route }) => {
               <MaterialCommunityIcons
                 name={item.hasInteractions ? 'alert-circle' : 'check-circle'}
                 size={24}
-                color={item.hasInteractions ? COLORS.warning : COLORS.success}
+                color={item.hasInteractions ? colors.warning : colors.success}
               />
               <View style={styles.historyContent}>
                 <Text style={styles.historyTitle}>
@@ -373,7 +378,7 @@ const InteractionCheckerScreen = ({ navigation, route }) => {
               <MaterialCommunityIcons
                 name="chevron-right"
                 size={20}
-                color={COLORS.textTertiary}
+                color={colors.textTertiary}
               />
             </View>
           </Card>
@@ -383,7 +388,7 @@ const InteractionCheckerScreen = ({ navigation, route }) => {
   );
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}> 
       <Header
         title="Interaction Checker"
         showBack
@@ -391,17 +396,22 @@ const InteractionCheckerScreen = ({ navigation, route }) => {
       />
       
       {/* View Toggle */}
-      <View style={styles.viewToggle}>
+      <View style={[
+        styles.viewToggle,
+        { backgroundColor: colors.surface, shadowColor: colors.shadow },
+      ]}>
         <TouchableOpacity
           style={[
             styles.toggleButton,
             viewMode !== 'history' && styles.toggleButtonActive,
+            viewMode !== 'history' && { backgroundColor: colors.primary },
           ]}
           onPress={() => setViewMode(results ? 'results' : 'select')}
         >
           <Text style={[
             styles.toggleText,
             viewMode !== 'history' && styles.toggleTextActive,
+            viewMode !== 'history' && { color: colors.textLight },
           ]}>
             Check
           </Text>
@@ -410,12 +420,14 @@ const InteractionCheckerScreen = ({ navigation, route }) => {
           style={[
             styles.toggleButton,
             viewMode === 'history' && styles.toggleButtonActive,
+            viewMode === 'history' && { backgroundColor: colors.primary },
           ]}
           onPress={() => setViewMode('history')}
         >
           <Text style={[
             styles.toggleText,
             viewMode === 'history' && styles.toggleTextActive,
+            viewMode === 'history' && { color: colors.textLight },
           ]}>
             History
           </Text>
@@ -446,10 +458,9 @@ const InteractionCheckerScreen = ({ navigation, route }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   scrollView: {
     flex: 1,
@@ -464,7 +475,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginHorizontal: SPACING.base,
     marginBottom: SPACING.md,
-    backgroundColor: COLORS.surface,
     borderRadius: BORDER_RADIUS.md,
     padding: SPACING.xs,
     ...SHADOWS.sm,
@@ -476,15 +486,15 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.base,
   },
   toggleButtonActive: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: colors.primary,
   },
   toggleText: {
     fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   toggleTextActive: {
-    color: COLORS.white,
+    color: colors.textLight,
   },
   
   // Selection styles
@@ -493,7 +503,7 @@ const styles = StyleSheet.create({
   },
   selectionTitle: {
     fontSize: TYPOGRAPHY.fontSize.base,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: SPACING.sm,
   },
   selectionActions: {
@@ -505,17 +515,16 @@ const styles = StyleSheet.create({
   },
   actionLinkText: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.primary,
+    color: colors.primary,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
   },
   actionDivider: {
-    color: COLORS.textTertiary,
+    color: colors.textTertiary,
     marginHorizontal: SPACING.sm,
   },
   selectedBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.primarySoft,
     paddingVertical: SPACING.sm,
     paddingHorizontal: SPACING.md,
     borderRadius: BORDER_RADIUS.md,
@@ -523,7 +532,7 @@ const styles = StyleSheet.create({
   },
   selectedBadgeText: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.primary,
+    color: colors.primary,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     marginLeft: SPACING.sm,
   },
@@ -538,8 +547,7 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   medicationSelectItemSelected: {
-    borderColor: COLORS.primary,
-    backgroundColor: COLORS.primarySoft,
+    borderColor: colors.primary,
   },
   checkboxContainer: {
     padding: SPACING.md,
@@ -549,14 +557,12 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: BORDER_RADIUS.sm,
     borderWidth: 2,
-    borderColor: COLORS.border,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.surface,
   },
   checkboxSelected: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   medicationCardInSelect: {
     flex: 1,
@@ -587,19 +593,18 @@ const styles = StyleSheet.create({
   resultsTitle: {
     fontSize: TYPOGRAPHY.fontSize.xl,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
-    color: COLORS.textPrimary,
+    color: colors.textPrimary,
   },
   resultsSubtitle: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: 2,
   },
   resultsSummary: {
     fontSize: TYPOGRAPHY.fontSize.base,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     lineHeight: TYPOGRAPHY.fontSize.base * TYPOGRAPHY.lineHeight.relaxed,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
     paddingTop: SPACING.md,
   },
   
@@ -607,7 +612,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: TYPOGRAPHY.fontSize.md,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
-    color: COLORS.textPrimary,
+    color: colors.textPrimary,
     marginBottom: SPACING.md,
     marginTop: SPACING.md,
   },
@@ -621,7 +626,6 @@ const styles = StyleSheet.create({
   checkedMedChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.primarySoft,
     paddingVertical: SPACING.sm,
     paddingHorizontal: SPACING.md,
     borderRadius: BORDER_RADIUS.full,
@@ -630,7 +634,6 @@ const styles = StyleSheet.create({
   },
   checkedMedText: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.primary,
     marginLeft: SPACING.xs,
   },
   
@@ -657,11 +660,11 @@ const styles = StyleSheet.create({
   historyTitle: {
     fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
-    color: COLORS.textPrimary,
+    color: colors.textPrimary,
   },
   historyDate: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.textTertiary,
+    color: colors.textTertiary,
     marginTop: 2,
   },
   
@@ -671,13 +674,12 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginTop: SPACING.xl,
     padding: SPACING.md,
-    backgroundColor: COLORS.background,
     borderRadius: BORDER_RADIUS.md,
   },
   disclaimerText: {
     flex: 1,
     fontSize: TYPOGRAPHY.fontSize.xs,
-    color: COLORS.textTertiary,
+    color: colors.textTertiary,
     marginLeft: SPACING.sm,
     lineHeight: TYPOGRAPHY.fontSize.xs * TYPOGRAPHY.lineHeight.relaxed,
   },

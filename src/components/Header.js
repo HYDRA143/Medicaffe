@@ -86,7 +86,7 @@ const Header = ({
               style={styles.backButton}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
-              <Text style={styles.backEmoji}>←</Text>
+              <Text style={[styles.backEmoji, { color: variantStyles.iconColor }]}>←</Text>
             </TouchableOpacity>
           )}
         </View>
