@@ -1,148 +1,17 @@
-# 🚫 MediCaffe Git Ignore Configuration
-# Learn more: https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
-
-# ============================================
-# 📦 Dependencies
-# ============================================
 node_modules/
-.pnp/
-.pnp.js
-
-# ============================================
-# 📱 Expo / React Native
-# ============================================
 .expo/
+.expo-shared/
 dist/
-web-build/
-expo-env.d.ts
-*.hbc
-
-# ============================================
-# 🔧 Native Build Files
-# ============================================
-*.orig.*
+npm-debug.*
 *.jks
 *.p8
 *.p12
 *.key
 *.mobileprovision
-*.provisioning
-
-# iOS
-ios/Pods/
-ios/build/
-ios/*.xcworkspace
-ios/*.xcodeproj/project.xcworkspace/xcuserdata
-ios/DerivedData/
-*.ipa
-
-# Android
-android/app/build/
-android/.gradle/
-android/build/
-android/local.properties
-*.apk
-*.aab
-
-# ============================================
-# 🚇 Metro Bundler
-# ============================================
-.metro-health-check*
-.metro/
-
-# ============================================
-# 🐛 Debug Files
-# ============================================
-npm-debug.*
-yarn-debug.*
-yarn-error.*
-*.log
-*.log.*
-
-# ============================================
-# 💻 OS Generated Files
-# ============================================
-# macOS
-.DS_Store
-.AppleDouble
-.LSOverride
-._*
-.Spotlight-V100
-.Trashes
-
-# Windows
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-
-# Linux
-*~
-
-# ============================================
-# 🔐 Environment & Secrets
-# ============================================
+*.orig.*
+web-build/
 .env
-.env.*
 .env.local
-.env.development.local
-.env.test.local
-.env.production.local
-*.pem
-secrets.json
-api-keys.json
-
-# ============================================
-# 📝 TypeScript
-# ============================================
-*.tsbuildinfo
-tsconfig.tsbuildinfo
-
-# ============================================
-# 🧪 Testing
-# ============================================
-coverage/
-.nyc_output/
-jest-results/
-test-results/
-
-# ============================================
-# 💻 IDE & Editor
-# ============================================
-.idea/
-.vscode/
-*.swp
-*.swo
-*.sublime-workspace
-*.sublime-project
-.project
-.classpath
-.settings/
-*.iml
-
-# ============================================
-# 📁 Temporary Files
-# ============================================
-tmp/
-temp/
-.tmp/
-.cache/
-*.tmp
-*.temp
-
-# ============================================
-# 🔑 Security & Credentials
-# ============================================
-*.keystore
-*.jks
-google-services.json
-GoogleService-Info.plist
-firebase.json
-.firebaserc
-
-# ============================================
-# 📊 Misc
-# ============================================
-*.bak
-*.backup
-.history/
-*.patch
+.env.*.local
+.DS_Store
+*.log
